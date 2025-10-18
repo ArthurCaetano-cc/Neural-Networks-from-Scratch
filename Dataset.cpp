@@ -1,22 +1,8 @@
-#include <cstddef>
-#include <cstdint>
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <string>
-#include <vector>
+#include "Dataset.hpp"
 
 using namespace std;
 
 int num_classes = 10;
-
-struct Dataset {
-    vector<vector<uint8_t>> labels;  // one hot encoded labels
-    vector<vector<uint32_t>> images;  // matrix of each pixel value in the image
-    size_t dim = 0; // number of pixels of each image
-    size_t n = 0; // number of images of the dataset
-};
-
 
 void to_one_hot(vector<uint8_t>&labels, int label){
     // This is correct
@@ -83,23 +69,4 @@ Dataset load_csv(const string& filename) {
     file.close();
 
     return ReadMatrix;
-}
-
-
-int main(int argc, char* argv[]) {
-
-    if(argc < 3){
-        cerr << "Please provide the train.csv and test.csv" << endl;
-        return 1;
-    }
-    
-    cout << "[INFO] Reading files..." << endl;
-    Dataset train =  load_csv(argv[1]);
-    Dataset test =  load_csv(argv[2]);
-
-    cout << "Reading completed:" << endl;
-    cout << "Length of train.csv: " << train.n << endl;
-    cout << "Length of test.csv: " << test.n << endl;
-
-    return 0;
 }
