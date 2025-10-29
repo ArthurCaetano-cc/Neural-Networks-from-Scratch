@@ -17,9 +17,7 @@ private:
 public:
     vector<vector<double>> weights; // shape: in_features x out_features
     vector<double> biases; // length: out_features
-    
     vector<vector<double>> z; //output of the forward propagation, stored to calculate the gradients
-    vector<vector<double>> a; //activation function in the output, stored to calculate the gradients
 
     LinearLayer(int in_f, int out_f, Activation act = Activation::None);
 
@@ -29,14 +27,12 @@ public:
         if(input[0].size() != static_cast<size_t>(in_features)) {
             throw invalid_argument("Input feature size does not match LinearLayer in_features");
         }
+        vector<vector<double>> result = dot_product(input, weights); // (batch x out_features)
+        result = add_bias_vector(result, biases);
 
+        result = apply_activation(result, activation);
+        z = result;
 
-        z = dot_product(input, weights); // (batch x out_features)
-        z = add_bias_vector(z, biases);
-
-        a = apply_activation(z, activation);
-
-        return a;
-
+        return result;
     }
 };

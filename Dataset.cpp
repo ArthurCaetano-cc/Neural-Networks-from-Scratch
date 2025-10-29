@@ -4,10 +4,9 @@ using namespace std;
 
 int num_classes = 10;
 
-void to_one_hot(vector<uint8_t>&labels, int label){
-    // This is correct
+void to_one_hot(vector<double>&labels, int label){
     if (label >= 0 && label < labels.size()) {
-        labels[label] = 1;
+        labels[label] = 1.0;
     }
 }
 
@@ -34,7 +33,7 @@ Dataset load_csv(const string& filename) {
         string cell;
         
         vector<uint32_t> pixels;
-        vector<uint8_t> labels(num_classes, 0);
+        vector<double> labels(num_classes, 0);
         
         size_t current_cell_index = 0; // Use a dedicated index for the cell/column
 

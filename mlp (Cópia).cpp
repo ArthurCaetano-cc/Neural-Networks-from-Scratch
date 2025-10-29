@@ -21,7 +21,7 @@ Obs:
 using namespace std;
 
 // Hyperparameters:
-int NUM_CLASSES = 10, IMG_SIZE=784, EPOCHS=50;
+int NUM_CLASSES = 10, IMG_SIZE=784, EPOCHS=10;
 double LR=0.001;
 
 class MLP {
@@ -50,8 +50,8 @@ public:
 
 
     // returns the predicted label
-    vector<vector<double>> forward(vector<vector<double>> img){
-        vector<vector<double>> x = inputLayer.forward<double>(img);
+    vector<vector<double>> forward(vector<vector<uint32_t>> img){
+        vector<vector<double>> x = inputLayer.forward<uint32_t>(img);
         x = hiddenLayer.forward<double>(x);
         x = outputLayer.forward<double>(x);
 
@@ -122,14 +122,6 @@ int main(int argc, char* argv[]){
     cout << "[INFO] Reading files..." << endl;
     Dataset train =  load_csv(argv[1]);
 
-    //normalizing
-    vector<vector<double>> normalized_input(train.n, vector<double>(train.images[0].size()));
-    for(size_t i = 0; i < train.n; i++){
-        for(size_t j = 0; j < train.images[0].size(); j++){
-            normalized_input[i][j] = static_cast<double>(train.images[i][j]) / 255.0;
-        }
-    }
-
     cout << "Reading completed:" << endl;
     cout << "Length of train.csv: " << train.n << endl;
 
@@ -145,8 +137,17 @@ int main(int argc, char* argv[]){
         vector<int> expected(train.n);
 
         for(int j = 0; j<train.n; j++){
+            if (j == 0 && i == 0) {
+                cout << "First output weight before: " << mlp.outputLayer.weights[0][0] << endl;
+                cout << "First hidden weight before: " << mlp.hiddenLayer.weights[0][0] << endl;
+                cout << "First input weight before: " << mlp.inputLayer.weights[0][0] << endl;
+            }
 
-            vector<vector<double>> y_hat = mlp.forward({normalized_input[j]});
+            if (j == 1) {
+                cout << "\nAfter first update: " << mlp.outputLayer.weights[0][0] << " " << mlp.hiddenLayer.weights[0][0] << " " << mlp.inputLayer.weights[0][0] << endl;
+            }
+
+            vector<vector<double>> y_hat = mlp.forward({train.images[j]});
             mlp.optimizer_step({train.images[j]}, y_hat, {train.labels[j]});
             
             predictions[j] = mlp.arg_max(y_hat[0]);
